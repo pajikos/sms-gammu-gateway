@@ -32,7 +32,7 @@ class Sms(Resource):
 
     @auth.login_required
     def post(self):
-        args = self.parser.parse_args(strict=True)
+        args = self.parser.parse_args()
         if args['text'] is None or args['number'] is None:
             abort(404, message="Parameters 'text' and 'number' are required.")
         message = {
