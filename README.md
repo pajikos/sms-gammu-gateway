@@ -119,7 +119,7 @@ Try to check [gammu configuration file site](https://wammu.eu/docs/manual/config
 #### Signal Strength sensor
 ```
 - platform: rest
-  resource: http://172.16.100.10:5070/signal
+  resource: http://xxx.xxx.xxx.xxx:5000/signal
   name: GSM Signal
   scan_interval: 30
   value_template: '{{ value_json.SignalPercent }}'
