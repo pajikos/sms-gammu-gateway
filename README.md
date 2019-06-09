@@ -115,11 +115,11 @@ services:
 
 ## FAQ
 #### PIN configuration
-Pin to unblock SIM card could be set using environment variable PIN.
+Pin to unblock SIM card could be set using environment variable PIN, e.g. PIN=1234.
 #### Authentication
 Out of the box, there is needed an HTTP Basic authentication to send any SMS, username and password can be configured in `credentials.txt`
 #### How to use HTTPS?
-Using environment variable SSL, the program expects RSA private key and certificate to provide content via HTTPS.
+Using environment variable SSL=True, the program expects RSA private key and certificate to provide content via HTTPS.
 Expected file paths (you can edit it in run.py or mount your own key/cert in Docker):
 
 ```
