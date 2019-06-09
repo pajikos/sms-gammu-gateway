@@ -15,12 +15,18 @@ Authorization: Basic admin password
   "number": "+420xxxxxxxxx"
 }
 ```
-
 of you can simply get the current signal strength:
 ```
 GET http://xxx.xxx.xxx.xxx:5000/signal
 ```
-
+and the response:
+```
+{
+  "SignalStrength": -83, 
+  "SignalPercent": 45, 
+  "BitErrorRate": -1
+}
+```
 There are two options how to run this REST API SMS Gateway:
 * Standalone installation
 * Running in Docker
@@ -28,13 +34,10 @@ There are two options how to run this REST API SMS Gateway:
 ## Prerequisites
 Either you are using Docker or standalone installation, your GSM modem must be visible in the system. 
 When you put a USB stick to your system, you have to see a new USB device:
-
 ```
 dmesg | grep ttyUSB
 ```
-
 or typing command:
-
 ```
 lsusb
 ```
@@ -43,59 +46,43 @@ lsusb
 Bus 001 Device 009: ID 12d1:1406 Huawei Technologies Co., Ltd. E1750
 ...
 ```
-
 If only cdrom device appeared, install [usb-modeswitch](http://www.draisberghof.de/usb_modeswitch) to see a modem as well:
-
 ```
 apt-get install usb-modeswitch
 ```
- 
- 
+
 ## Standalone installation
-
 This guide does not cover Python 3.x installation process (including pip), but it is required as well.
-
 #### Install system dependencies (using apt):
-
 ```
 apt-get update && apt-get install -y pkg-config gammu libgammu-dev libffi-dev
 ```
 #### Clone repository
-
 ```
 git clone https://github.com/pajikos/sms-gammu-gateway
 cd sms-gammu-gateway
 ```
 3. Install python dependencies
-
 ```
 pip install -r requirements.txt
 ```
-
 #### Edit gammu configuration 
-
 You usually need to edit device property in file [gammu.config](https://wammu.eu/docs/manual/config/index.html) only, e.g.:
-
 ```
 [gammu]
 device = /dev/ttyUSB1
 connection = at
 ```
-
 #### Run application (it will start to listen on port 5000):
-
 ```
 python run.py
 ``` 
 
 ## Running in Docker
-
 In a case of using any GSM supporting AT commands, you can simply run the container:
-
 ```
 docker run -d -p 5000:5000 --device=/dev/ttyUSB0:/dev/mobile pajikos/sms-gammu-gateway
 ```
-
 #### Docker compose:
 ```
 version: '3'
@@ -112,7 +99,6 @@ services:
       - /dev/ttyUSB1:/dev/mobile
 ```
 
-
 ## FAQ
 #### PIN configuration
 Pin to unblock SIM card could be set using environment variable PIN, e.g. PIN=1234.
@@ -126,6 +112,8 @@ Expected file paths (you can edit it in run.py or mount your own key/cert in Doc
 /ssl/key.pem
 /ssl/cert.pem
 ```
+#### It does not work...
+Try to check [gammu configuration file site](https://wammu.eu/docs/manual/config/index.html)
 
 ## Integration with Home Assistant
 #### Signal Strength sensor
