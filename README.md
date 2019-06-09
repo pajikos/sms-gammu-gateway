@@ -15,7 +15,7 @@ Authorization: Basic admin password
   "number": "+420xxxxxxxxx"
 }
 ```
-of you can simply get the current signal strength:
+or you can simply get the current signal strength:
 ```
 GET http://xxx.xxx.xxx.xxx:5000/signal
 ```
