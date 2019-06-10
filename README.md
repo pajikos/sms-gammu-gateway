@@ -62,7 +62,7 @@ apt-get update && apt-get install -y pkg-config gammu libgammu-dev libffi-dev
 git clone https://github.com/pajikos/sms-gammu-gateway
 cd sms-gammu-gateway
 ```
-3. Install python dependencies
+#### Install python dependencies
 ```
 pip install -r requirements.txt
 ```
