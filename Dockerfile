@@ -6,15 +6,18 @@ RUN apt-get update && apt-get install -y \
     gammu \
     libgammu-dev
 
-ADD requirements.txt /
-ADD gammu.config /
-ADD credentials.txt /
-ADD support.py /
-
 RUN mkdir ssl
+
+ENV BASE_PATH /sms-gw
+RUN mkdir $BASE_PATH
+WORKDIR $BASE_PATH
+ADD requirements.txt .
+ADD gammu.config .
+ADD credentials.txt .
+ADD support.py .
 
 RUN pip install -r requirements.txt
 
-ADD run.py /
+ADD run.py .
 
 CMD [ "python", "./run.py" ]
