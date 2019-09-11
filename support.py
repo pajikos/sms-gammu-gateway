@@ -3,7 +3,7 @@ import sys
 import gammu
 
 
-def load_user_data(filename='/credentials.txt'):
+def load_user_data(filename='credentials.txt'):
     users = {}
     with open(filename) as credentials:
         for line in credentials:
@@ -12,7 +12,7 @@ def load_user_data(filename='/credentials.txt'):
     return users
 
 
-def init_state_machine(pin, filename='/gammu.config'):
+def init_state_machine(pin, filename='gammu.config'):
     sm = gammu.StateMachine()
     sm.ReadConfig(Filename=filename)
     sm.Init()
