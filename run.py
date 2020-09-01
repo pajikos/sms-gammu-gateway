@@ -50,9 +50,38 @@ class Signal(Resource):
     def get(self):
         return machine.GetSignalQuality()
 
+class Getsms(Resource):
+    def __init__(self, sm):
+        self.machine = sm
+
+    @auth.login_required
+    def get(self):
+        status = machine.GetSMSStatus()
+        remain = status['SIMUsed'] + status['PhoneUsed'] + status['TemplatesUsed']
+
+        sms_dict = {"Date": "", "Number": "", "State": "", "Text": ""}
+
+        try:
+
+           sms = machine.GetNextSMS(Start=True, Folder=0)
+
+        except:
+           return sms_dict
+
+        if len(sms) > 0:
+
+          sms_dict["Date"] = str(sms[0]['DateTime'])
+          sms_dict["Number"] = str(sms[0]['Number'])
+          sms_dict["State"] = str(sms[0]['State'])
+          sms_dict["Text"] = str(sms[0]['Text'])
+
+          machine.DeleteSMS(Folder=0, Location=sms[0]['Location'])
+
+        return sms_dict
 
 api.add_resource(Sms, '/sms', resource_class_args=[machine])
 api.add_resource(Signal, '/signal', resource_class_args=[machine])
+api.add_resource(Getsms, '/getsms', resource_class_args=[machine])
 
 if __name__ == '__main__':
     if ssl:
