@@ -157,3 +157,27 @@ notify:
       message: 'alert, entry detected at garage door'
       target: '+xxxxxxxxxxxx'
 ```
+
+#### Receiving SMS
+
+```
+  - platform: rest
+    resource: http://127.0.0.1:5000/getsms
+    name: sms
+    scan_interval: 20
+    username: admin
+    password: password
+
+  - platform: template
+    sensors:
+      sms_parsed:
+        friendly_name: "sms_text"
+        value_template: "{% set sms_state = states('sensor.sms')|from_json %}{{sms_state.Date}}"
+        attribute_templates:
+          text: >-
+            {% set sms_state = states('sensor.sms')|from_json %}{{sms_state.Text}}
+          number: >-
+            {% set sms_state = states('sensor.sms')|from_json %}{{sms_state.Number}}
+          state: >-
+            {% set sms_state = states('sensor.sms')|from_json %}{{sms_state.State}}
+```
