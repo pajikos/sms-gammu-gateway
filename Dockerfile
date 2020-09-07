@@ -1,11 +1,8 @@
-FROM python:3
+FROM python:3-alpine
 
-# libgammu-dev needed by https://github.com/gammu/python-gammu/issues/32
-RUN apt-get update && apt-get install -y \
-    pkg-config \
-    gammu \
-    libgammu-dev
-
+RUN echo 'http://dl-cdn.alpinelinux.org/alpine/v3.9/community' >> /etc/apk/repositories
+RUN apk update
+RUN apk add --no-cache pkgconfig gammu=1.39.0-r2 gammu-libs=1.39.0-r2  gammu-dev=1.39.0-r2
 RUN mkdir ssl
 
 ENV BASE_PATH /sms-gw
@@ -16,7 +13,11 @@ ADD gammu.config .
 ADD credentials.txt .
 ADD support.py .
 
-RUN pip install -r requirements.txt
+#RUN pip install -r requirements.txt
+
+RUN apk add --no-cache --virtual .build-deps libffi-dev openssl-dev gcc musl-dev \
+     && pip install -r requirements.txt \
+     && apk del .build-deps libffi-dev openssl-dev gcc musl-dev
 
 ADD run.py .
 
