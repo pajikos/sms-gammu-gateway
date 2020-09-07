@@ -3,8 +3,8 @@ FROM python:3
 # libgammu-dev needed by https://github.com/gammu/python-gammu/issues/32
 RUN apt-get update && apt-get install -y \
     pkg-config \
-    gammu=1.39.0 \
-    libgammu-dev=1.39.0
+    gammu \
+    libgammu-dev
 
 RUN mkdir ssl
 
