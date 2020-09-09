@@ -28,6 +28,7 @@ class Sms(Resource):
         self.parser = reqparse.RequestParser()
         self.parser.add_argument('text')
         self.parser.add_argument('number')
+        self.parser.add_argument('smsc')
         self.machine = sm
 
     @auth.login_required
@@ -37,7 +38,7 @@ class Sms(Resource):
             abort(404, message="Parameters 'text' and 'number' are required.")
         message = {
             'Text': args.get("text"),
-            'SMSC': {'Location': 1},
+            'SMSC': args.get("smsc") or {'Location': 1},
             'Number': args.get("number"),
         }
         return machine.SendSMS(message), 200
