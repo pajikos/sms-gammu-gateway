@@ -38,7 +38,7 @@ class Sms(Resource):
             abort(404, message="Parameters 'text' and 'number' are required.")
         message = {
             'Text': args.get("text"),
-            'SMSC': args.get("smsc") or {'Location': 1},
+            'SMSC': { 'Number': args.get("smsc") } if args.get("smsc") else {'Location': 1},
             'Number': args.get("number"),
         }
         return machine.SendSMS(message), 200
