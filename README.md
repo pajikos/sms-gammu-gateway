@@ -1,4 +1,5 @@
 # REST API SMS Gateway using gammu
+
 Simple SMS REST API gateway for sending SMS from gammu supported devices. Gammu supports standard AT commands, which are using most of USB GSM modems.
 
 ![Docker Cloud Build Status](https://img.shields.io/docker/cloud/build/pajikos/sms-gammu-gateway.svg)
@@ -6,6 +7,7 @@ Simple SMS REST API gateway for sending SMS from gammu supported devices. Gammu 
 ![GitHub](https://img.shields.io/github/license/pajikos/sms-gammu-gateway.svg)
 
 When you run this application, you can simply send SMS using REST API:
+
 ```
 POST http://xxx.xxx.xxx.xxx:5000/sms
 Content-Type: application/json
@@ -14,6 +16,16 @@ Authorization: Basic admin password
   "text": "Hello, how are you?",
   "number": "+420xxxxxxxxx"
 }
+```
+example:
+```bash
+AUTH=$(echo -ne "admin:password" | base64 --wrap 0)
+curl -H 'Content-Type: application/json' -H "Authorization: Basic $AUTH" -X POST --data '{"text":"Hello, how are you?", "number":"+420xxxxxxxxx"}' http://localhost:5000/sms
+1
+```
+If you need to customize the smsc number:
+```
+curl -H 'Content-Type: application/json' -H "Authorization: Basic $AUTH" -X POST --data '{"text":"Hello, how are you?", "number":"+420xxxxxxxxx","smsc": "+33695000695"}' http://localhost:5000/sms
 ```
 or you can simply get the current signal strength:
 ```
