@@ -36,12 +36,12 @@ class Sms(Resource):
         args = self.parser.parse_args()
         if args['text'] is None or args['number'] is None:
             abort(404, message="Parameters 'text' and 'number' are required.")
-        message = {
-            'Text': args.get("text"),
-            'SMSC': { 'Number': args.get("smsc") } if args.get("smsc") else {'Location': 1},
-            'Number': args.get("number"),
-        }
-        return machine.SendSMS(message), 200
+        result = [machine.SendSMS({
+          'Text': args.get("text"),
+          'SMSC': {'Number': args.get("smsc")} if args.get("smsc") else {'Location': 1},
+          'Number': number,
+        }) for number in args.get("number").split(',')]
+        return {"status": 200, "message": str(result)}, 200
 
 
 class Signal(Resource):
