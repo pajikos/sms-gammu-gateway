@@ -4,6 +4,8 @@ RUN echo 'http://dl-cdn.alpinelinux.org/alpine/v3.9/community' >> /etc/apk/repos
     && apk update \
     && apk add --no-cache pkgconfig gammu=1.39.0-r2 gammu-libs=1.39.0-r2 gammu-dev=1.39.0-r2
 
+RUN python -m pip install -U pip
+
 # Build dependencies in a dedicated stage
 FROM base AS dependencies
 COPY requirements.txt .
