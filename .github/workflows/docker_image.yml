@@ -1,16 +1,17 @@
 name: Docker image
 
 on:
-  # Run manually from the Actions tab
   workflow_dispatch:
-  # Run automatically when a change is pushed on master
-  #push:
-  #  branches: master
+    inputs:
+      docker_tag:
+        description: 'Docker image tag'
+        required: true
+        default: 'latest'
 
 env:
   PLATFORMS: linux/amd64,linux/arm/v6,linux/arm64
   DOCKER_HUB_REPOSITORY: ${{ github.repository }}
-  DOCKER_HUB_TAG: latest
+  DOCKER_HUB_TAG: ${{ github.event.inputs.docker_tag }}
 
 jobs:
   docker:
