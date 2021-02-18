@@ -1,44 +1,113 @@
 # REST API SMS Gateway using gammu
 
-Simple SMS REST API gateway for sending SMS from gammu supported devices. Gammu supports standard AT commands, which are using most of USB GSM modems.
+Simple SMS REST API gateway for sending and receiving SMS from gammu supported devices. Gammu supports standard AT commands, which are using most of USB GSM modems.
 
 ![Docker Cloud Build Status](https://img.shields.io/docker/cloud/build/pajikos/sms-gammu-gateway.svg)
 ![Docker Automated build](https://img.shields.io/docker/automated/pajikos/sms-gammu-gateway.svg)
 ![GitHub](https://img.shields.io/github/license/pajikos/sms-gammu-gateway.svg)
 
-When you run this application, you can simply send SMS using REST API:
 
-```
-POST http://xxx.xxx.xxx.xxx:5000/sms
-Content-Type: application/json
-Authorization: Basic admin password
-{
-  "text": "Hello, how are you?",
-  "number": "+420xxxxxxxxx"
-}
-```
-example:
-```bash
-AUTH=$(echo -ne "admin:password" | base64 --wrap 0)
-curl -H 'Content-Type: application/json' -H "Authorization: Basic $AUTH" -X POST --data '{"text":"Hello, how are you?", "number":"+420xxxxxxxxx"}' http://localhost:5000/sms
-1
-```
-If you need to customize the smsc number:
-```
-curl -H 'Content-Type: application/json' -H "Authorization: Basic $AUTH" -X POST --data '{"text":"Hello, how are you?", "number":"+420xxxxxxxxx","smsc": "+33695000695"}' http://localhost:5000/sms
-```
-or you can simply get the current signal strength:
-```
-GET http://xxx.xxx.xxx.xxx:5000/signal
-```
-and the response:
-```
-{
-  "SignalStrength": -83, 
-  "SignalPercent": 45, 
-  "BitErrorRate": -1
-}
-```
+#### Available REST API endpoints:
+
+- ##### Send a SMS :lock:
+  ```
+  POST http://xxx.xxx.xxx.xxx:5000/sms
+  Content-Type: application/json
+  Authorization: Basic admin password
+  {
+    "text": "Hello, how are you?",
+    "number": "+420xxxxxxxxx"
+  }
+  ```
+  Example:
+  ```bash
+  AUTH=$(echo -ne "admin:password" | base64 --wrap 0)
+  curl -H 'Content-Type: application/json' -H "Authorization: Basic $AUTH" -X POST --data '{"text":"Hello, how   are you?", "number":"+420xxxxxxxxx"}' http://localhost:5000/sms
+  1
+  ```
+  If you need to customize the smsc number:
+  ```bash
+  curl -H 'Content-Type: application/json' -H "Authorization: Basic $AUTH" -X POST --data '{"text":"Hello, how are you?", "number":"+420xxxxxxxxx","smsc": "+33695000695"}' http://localhost:5000/sms
+  ```
+- ##### Retrieve all the SMS stored on the modem/SIM Card :lock:
+  ```
+  GET http://xxx.xxx.xxx.xxx:5000/sms
+  ```
+  ```json
+  [
+    {
+      "Date": "2021-02-17 15:20:20",
+      "Number": "+xxxxxxxxxxx",
+      "State": "UnRead",
+      "Text": "Hello"
+    },
+    ...
+  ]
+  ```
+
+- ##### Retrieve {n}th message stored on the modem/SIM Card :lock:
+  ```
+  GET http://xxx.xxx.xxx.xxx:5000/sms/{n}
+  ```
+  ```json
+  {
+    "Date": "2021-02-17 15:20:20",
+    "Number": "+xxxxxxxxxxx",
+    "State": "UnRead",
+    "Text": "Hello"
+  }
+  ```
+
+- ##### Delete {n}th message stored on the modem/SIM Card :lock:
+  ```
+  DELETE http://xxx.xxx.xxx.xxx:5000/sms/{n}
+  ```
+
+- ##### Retrieve 1st message stored on the modem/SIM Card and delete it :lock:
+  ```
+  GET http://xxx.xxx.xxx.xxx:5000/getsms
+  ```
+  ```json
+  {
+    "Date": "2021-02-17 15:20:20",
+    "Number": "+xxxxxxxxxxx",
+    "State": "UnRead",
+    "Text": "Hello"
+  }
+  ```
+
+- ##### Get the current signal strength :unlock: 
+  ```
+  GET http://xxx.xxx.xxx.xxx:5000/signal
+  ```
+  ```json
+  {
+    "SignalStrength": -83, 
+    "SignalPercent": 45, 
+    "BitErrorRate": -1
+  }
+  ```
+
+- ##### Get the current network details :unlock: 
+  ```
+  GET http://xxx.xxx.xxx.xxx:5000/network
+  ```
+  ```json
+  {
+    "NetworkName": "DiGi",
+    "State": "RoamingNetwork",
+    "PacketState": "RoamingNetwork",
+    "NetworkCode": "502 16",
+    "CID": "00A18B30",
+    "PacketCID": "00A18B30",
+    "GPRS": "Attached",
+    "PacketLAC": "7987",
+    "LAC": "7987"
+  }
+  ```
+
+# Usage
+
 There are two options how to run this REST API SMS Gateway:
 * Standalone installation
 * Running in Docker
@@ -129,7 +198,7 @@ Try to check [gammu configuration file site](https://wammu.eu/docs/manual/config
 
 ## Integration with Home Assistant
 #### Signal Strength sensor
-```
+```yaml
 - platform: rest
   resource: http://xxx.xxx.xxx.xxx:5000/signal
   name: GSM Signal
@@ -139,21 +208,21 @@ Try to check [gammu configuration file site](https://wammu.eu/docs/manual/config
 ```
 
 #### SMS notification
-```
-notify:    
+```yaml
+notify:
   - name: SMS GW
     platform: rest
     resource: http://xxx.xxx.xxx.xxx:5000/sms
     method: POST_JSON
     authentication: basic
-    username: admin
-    password: password
+    username: !secret sms_gateway_username
+    password: !secret sms_gateway_password
     target_param_name: number
     message_param_name: text
 ```
 
 #### Using in Automation
-```
+```yaml
 - alias: Alarm Entry Alert - Garage Door
   trigger:
     platform: state
@@ -170,26 +239,36 @@ notify:
       target: '+xxxxxxxxxxxx'
 ```
 
-#### Receiving SMS
+#### Receiving SMS and sending notification
 
-```
+```yaml
+sensor:
   - platform: rest
     resource: http://127.0.0.1:5000/getsms
     name: sms
     scan_interval: 20
-    username: admin
-    password: password
+    username: !secret sms_gateway_username
+    password: !secret sms_gateway_password
+    json_attributes:
+      - Date
+      - Number
+      - Text
+      - State
 
-  - platform: template
-    sensors:
-      sms_parsed:
-        friendly_name: "sms_text"
-        value_template: "{% set sms_state = states('sensor.sms')|from_json %}{{sms_state.Date}}"
-        attribute_templates:
-          text: >-
-            {% set sms_state = states('sensor.sms')|from_json %}{{sms_state.Text}}
-          number: >-
-            {% set sms_state = states('sensor.sms')|from_json %}{{sms_state.Number}}
-          state: >-
-            {% set sms_state = states('sensor.sms')|from_json %}{{sms_state.State}}
+automation sms_automations:
+  - alias: Notify on received SMS
+    trigger:
+      - platform: template
+        value_template: "{{state_attr('sensor.sms', 'Text') != ''}}"
+    action:
+      - service: notify.mobile_app_[DEVICE]
+        data:
+          title: SMS from {{ state_attr('sensor.sms', 'Number') }}
+          message: "{{ state_attr('sensor.sms', 'Text') }}"
+          data:
+            sticky: "true"
+      - service: persistent_notification.create
+        data:
+          title: SMS from {{ state_attr('sensor.sms', 'Number') }}
+          message: "{{ state_attr('sensor.sms', 'Text') }}"
 ```

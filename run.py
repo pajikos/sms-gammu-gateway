@@ -1,10 +1,11 @@
 import os
 
-from flask import Flask
+from flask import Flask, request
 from flask_httpauth import HTTPBasicAuth
 from flask_restful import reqparse, Api, Resource, abort
 
-from support import load_user_data, init_state_machine
+from support import load_user_data, init_state_machine, retrieveAllSms, deleteSms
+from gammu import GSMNetworks
 
 pin = os.getenv('PIN', None)
 ssl = os.getenv('SSL', False)
@@ -23,13 +24,18 @@ def verify(username, password):
 
 
 class Sms(Resource):
-
     def __init__(self, sm):
         self.parser = reqparse.RequestParser()
         self.parser.add_argument('text')
         self.parser.add_argument('number')
         self.parser.add_argument('smsc')
         self.machine = sm
+
+    @auth.login_required
+    def get(self):
+        allSms = retrieveAllSms(machine)
+        list(map(lambda sms: sms.pop("Locations"), allSms))
+        return allSms
 
     @auth.login_required
     def post(self):
@@ -51,38 +57,61 @@ class Signal(Resource):
     def get(self):
         return machine.GetSignalQuality()
 
-class Getsms(Resource):
+
+class Network(Resource):
+    def __init__(self, sm):
+        self.machine = sm
+
+    def get(self):
+        network = machine.GetNetworkInfo()
+        network["NetworkName"] = GSMNetworks.get(network["NetworkCode"], 'Unknown')
+        return network
+
+
+class GetSms(Resource):
     def __init__(self, sm):
         self.machine = sm
 
     @auth.login_required
     def get(self):
-        status = machine.GetSMSStatus()
-        remain = status['SIMUsed'] + status['PhoneUsed'] + status['TemplatesUsed']
+        allSms = retrieveAllSms(machine)
+        sms = {"Date": "", "Number": "", "State": "", "Text": ""}
+        if len(allSms) > 0:
+            sms = allSms[0]
+            deleteSms(machine, sms)
+            sms.pop("Locations")
 
-        sms_dict = {"Date": "", "Number": "", "State": "", "Text": ""}
+        return sms
 
-        try:
 
-           sms = machine.GetNextSMS(Start=True, Folder=0)
+class SmsById(Resource):
+    def __init__(self, sm):
+        self.machine = sm
 
-        except:
-           return sms_dict
+    @auth.login_required
+    def get(self, id):
+        allSms = retrieveAllSms(machine)
+        self.abort_if_id_doesnt_exist(id, allSms)
+        sms = allSms[id]
+        sms.pop("Locations")
+        return sms
 
-        if len(sms) > 0:
+    def delete(self, id):
+        allSms = retrieveAllSms(machine)
+        self.abort_if_id_doesnt_exist(id, allSms)
+        deleteSms(machine, allSms[id])
+        return '', 204
 
-          sms_dict["Date"] = str(sms[0]['DateTime'])
-          sms_dict["Number"] = str(sms[0]['Number'])
-          sms_dict["State"] = str(sms[0]['State'])
-          sms_dict["Text"] = str(sms[0]['Text'])
+    def abort_if_id_doesnt_exist(self, id, allSms):
+        if id < 0 or id >= len(allSms):
+            abort(404, message = "Sms with id '{}' not found".format(id))
 
-          machine.DeleteSMS(Folder=0, Location=sms[0]['Location'])
-
-        return sms_dict
 
 api.add_resource(Sms, '/sms', resource_class_args=[machine])
+api.add_resource(SmsById, '/sms/<int:id>', resource_class_args=[machine])
 api.add_resource(Signal, '/signal', resource_class_args=[machine])
-api.add_resource(Getsms, '/getsms', resource_class_args=[machine])
+api.add_resource(Network, '/network', resource_class_args=[machine])
+api.add_resource(GetSms, '/getsms', resource_class_args=[machine])
 
 if __name__ == '__main__':
     if ssl:
