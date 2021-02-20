@@ -111,14 +111,11 @@ Simple SMS REST API gateway for sending and receiving SMS from gammu supported d
   GET http://xxx.xxx.xxx.xxx:5000/reset
   ```
   ```json
-  [
-    {
-      "Status": 200,
-      "Message": "Reset done"
-    },
-    ...
-  ]
-  ```
+  {
+    "Status": 200,
+    "Message": "Reset done"
+  }
+  ...
 
 
 # Usage
