@@ -106,6 +106,21 @@ Simple SMS REST API gateway for sending and receiving SMS from gammu supported d
   }
   ```
 
+- ##### Reset the modem :unlock:
+  ```
+  GET http://xxx.xxx.xxx.xxx:5000/reset
+  ```
+  ```json
+  [
+    {
+      "Status": 200,
+      "Message": "Reset done"
+    },
+    ...
+  ]
+  ```
+
+
 # Usage
 
 There are two options how to run this REST API SMS Gateway:
