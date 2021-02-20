@@ -115,7 +115,6 @@ Simple SMS REST API gateway for sending and receiving SMS from gammu supported d
     "Status": 200,
     "Message": "Reset done"
   }
-  ...
 
 
 # Usage
