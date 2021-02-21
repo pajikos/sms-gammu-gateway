@@ -106,7 +106,7 @@ Simple SMS REST API gateway for sending and receiving SMS from gammu supported d
   }
   ```
 
-- ##### Reset the modem :unlock:
+- ##### Reset the modem (see FAQ for more info) :unlock:
   ```
   GET http://xxx.xxx.xxx.xxx:5000/reset
   ```
