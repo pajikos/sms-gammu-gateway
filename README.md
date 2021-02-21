@@ -106,6 +106,17 @@ Simple SMS REST API gateway for sending and receiving SMS from gammu supported d
   }
   ```
 
+- ##### Reset the modem :unlock:
+  ```
+  GET http://xxx.xxx.xxx.xxx:5000/reset
+  ```
+  ```json
+  {
+    "Status": 200,
+    "Message": "Reset done"
+  }
+
+
 # Usage
 
 There are two options how to run this REST API SMS Gateway:
@@ -193,6 +204,10 @@ Expected file paths (you can edit it in run.py or mount your own key/cert in Doc
 /ssl/key.pem
 /ssl/cert.pem
 ```
+#### No more modem response ?
+If you have some regular problem with your modem and you don't want to disconnect and reconnect it physically to reset it, you can try to regularly use the reset function.
+(For example with my Huawei modem the reset function is used every 24 hours to maintain the stability of the system)
+
 #### It does not work...
 Try to check [gammu configuration file site](https://wammu.eu/docs/manual/config/index.html)
 

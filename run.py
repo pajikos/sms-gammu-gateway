@@ -58,6 +58,15 @@ class Signal(Resource):
         return machine.GetSignalQuality()
 
 
+class Reset(Resource):
+    def __init__(self, sm):
+        self.machine = sm
+
+    def get(self):
+        machine.Reset(False)
+        return {"status":200, "message": "Reset done"}, 200
+
+
 class Network(Resource):
     def __init__(self, sm):
         self.machine = sm
@@ -112,6 +121,7 @@ api.add_resource(SmsById, '/sms/<int:id>', resource_class_args=[machine])
 api.add_resource(Signal, '/signal', resource_class_args=[machine])
 api.add_resource(Network, '/network', resource_class_args=[machine])
 api.add_resource(GetSms, '/getsms', resource_class_args=[machine])
+api.add_resource(Reset, '/reset', resource_class_args=[machine])
 
 if __name__ == '__main__':
     if ssl:
