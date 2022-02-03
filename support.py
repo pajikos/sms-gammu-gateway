@@ -72,3 +72,7 @@ def retrieveAllSms(machine):
 
 def deleteSms(machine, sms):
     list(map(lambda location: machine.DeleteSMS(Folder=0, Location=location), sms["Locations"]))
+
+
+def encodeSms(smsinfo):
+    return gammu.EncodeSMS(smsinfo)
