@@ -199,11 +199,13 @@ Out of the box, there is needed an HTTP Basic authentication to send any SMS, us
 #### How to use HTTPS?
 Using environment variable SSL=True, the program expects RSA private key and certificate to provide content via HTTPS.
 Expected file paths (you can edit it in run.py or mount your own key/cert in Docker):
-
 ```
 /ssl/key.pem
 /ssl/cert.pem
 ```
+#### Change default port  
+Using environment variable example : PORT="5002". So not forget to modify the exposure of the port of your container.  
+
 #### No more modem response ?
 If you have some regular problem with your modem and you don't want to disconnect and reconnect it physically to reset it, you can try to regularly use the reset function.
 (For example with my Huawei modem the reset function is used every 24 hours to maintain the stability of the system)
