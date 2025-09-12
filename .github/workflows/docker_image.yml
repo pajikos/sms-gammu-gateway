@@ -47,6 +47,7 @@ jobs:
         with:
           platforms: ${{ env.PLATFORMS }}
           push: true
-          tags: ${{ env.DOCKER_HUB_REPOSITORY }}:${{ env.DOCKER_HUB_TAG }}
+          # tags: ${{ env.DOCKER_HUB_REPOSITORY }}:${{ env.DOCKER_HUB_TAG }}
+          tags: laurentiugrama:${{ env.DOCKER_HUB_TAG }}
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache,mode=max
