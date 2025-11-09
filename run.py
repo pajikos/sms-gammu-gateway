@@ -10,6 +10,7 @@ from gammu import GSMNetworks
 pin = os.getenv('PIN', None)
 ssl = os.getenv('SSL', False)
 port = os.getenv('PORT', '5000')
+host = os.getenv('BINDHOST', '0.0.0.0')
 user_data = load_user_data()
 machine = init_state_machine(pin)
 app = Flask(__name__)
@@ -139,6 +140,6 @@ api.add_resource(Reset, '/reset', resource_class_args=[machine])
 
 if __name__ == '__main__':
     if ssl:
-        app.run(port=port, host="0.0.0.0", ssl_context=('/ssl/cert.pem', '/ssl/key.pem'))
+        app.run(port=port, host=host, ssl_context=('/ssl/cert.pem', '/ssl/key.pem'))
     else:
-        app.run(port=port, host="0.0.0.0")
+        app.run(port=port, host=host)

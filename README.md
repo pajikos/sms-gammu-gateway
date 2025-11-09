@@ -143,6 +143,12 @@ If only cdrom device appeared, install [usb-modeswitch](http://www.draisberghof.
 apt-get install usb-modeswitch
 ```
 
+Per default, sms-gammu-gateway will listen on all interfaces and IPv4
+addresses (or, more precisely, on 0.0.0.0). You can listen on local
+(or other sets of) addresses only by setting the BINDHOST environment
+variable, e.g. either using appropriate docker settings, or in/from the
+executing shell.
+
 ## Standalone installation
 This guide does not cover Python 3.x installation process (including pip), but it is required as well.
 #### Install system dependencies (using apt):
