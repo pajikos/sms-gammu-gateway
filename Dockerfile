@@ -1,8 +1,9 @@
 FROM python:3-alpine AS base
 
-RUN echo 'http://dl-cdn.alpinelinux.org/alpine/v3.9/community' >> /etc/apk/repositories \
-    && apk update \
-    && apk add --no-cache pkgconfig gammu=1.39.0-r2 gammu-libs=1.39.0-r2 gammu-dev=1.39.0-r2
+RUN ALPINE_VERSION=$(grep '^VERSION_ID=' /etc/os-release | sed -E 's/^.*=([0-9]+)\.([0-9]+)\..*/\1.\2/') && \
+	echo "http://dl-cdn.alpinelinux.org/alpine/v${ALPINE_VERSION}/community" >> /etc/apk/repositories \
+	&& apk update \
+	&& apk add --no-cache pkgconfig gammu gammu-libs gammu-dev
 
 RUN python -m pip install -U pip
 
@@ -14,7 +15,7 @@ RUN apk add --no-cache --virtual .build-deps libffi-dev openssl-dev gcc musl-dev
 
 # Switch back to base layer for final stage
 FROM base AS final
-ENV BASE_PATH /sms-gw
+ENV BASE_PATH=/sms-gw
 RUN mkdir $BASE_PATH /ssl
 WORKDIR $BASE_PATH
 COPY . $BASE_PATH
