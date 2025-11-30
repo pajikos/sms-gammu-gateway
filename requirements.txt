@@ -3,3 +3,4 @@ flask
 flask-restful
 Flask-HTTPAuth
 pyopenssl
+waitress
