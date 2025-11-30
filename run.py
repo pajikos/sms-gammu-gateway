@@ -141,4 +141,6 @@ if __name__ == '__main__':
     if ssl:
         app.run(port=port, host="0.0.0.0", ssl_context=('/ssl/cert.pem', '/ssl/key.pem'))
     else:
-        app.run(port=port, host="0.0.0.0")
+        from waitress import serve
+        serve(app, host="0.0.0.0", port=port)
+
